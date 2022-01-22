@@ -9,7 +9,7 @@ import QtQuick.Window 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.0 as QtControls
 import org.kde.kirigami 2.4 as Kirigami
-import org.kde.newstuff 1.62 as NewStuff
+import org.kde.newstuff 1.81 as NewStuff
 import org.kde.kcm 1.3 as KCM
 
 KCM.GridViewKCM {
@@ -25,6 +25,16 @@ KCM.GridViewKCM {
     view.model: kcm.splashSortedModel
     //NOTE: pay attention to never break this binding
     view.currentIndex: kcm.sortModelPluginIndex(kcm.splashScreenSettings.theme)
+
+    actions.main: NewStuff.Action {
+        id: newStuffButton
+        text: i18n("&Get New…")
+        configFile: "ksplash.knsrc"
+        viewMode: NewStuff.Page.ViewMode.Preview
+        onEntryEvent: function(entry, event) {
+            kcm.ghnsEntryChanged(entry);
+        }
+    }
 
     // putting the InlineMessage as header item causes it to show up initially despite visible false
     header: ColumnLayout {
@@ -88,18 +98,4 @@ KCM.GridViewKCM {
         }
     }
 
-    footer: RowLayout {
-        Item {
-            Layout.fillWidth: true
-        }
-        NewStuff.Button {
-            id: newStuffButton
-            text: i18n("&Get New Splash Screens…")
-            configFile: "ksplash.knsrc"
-            viewMode: NewStuff.Page.ViewMode.Preview
-            onEntryEvent: function(entry, event) {
-                kcm.ghnsEntryChanged(entry);
-            }
-        }
-    }
 }
