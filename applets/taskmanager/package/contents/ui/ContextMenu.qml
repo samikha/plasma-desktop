@@ -588,9 +588,7 @@ PlasmaComponents.ContextMenu {
         text: i18n("Unpin from Task Manager")
         icon: "window-unpin"
 
-        onClicked: {
-            tasksModel.requestRemoveLauncher(get(atm.LauncherUrlWithoutIcon));
-        }
+        onClicked: tasks.confirmUnpin(visualParent, get(atm.LauncherUrlWithoutIcon))
     }
 
     PlasmaComponents.MenuItem {

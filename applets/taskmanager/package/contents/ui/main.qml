@@ -4,12 +4,13 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.1
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
 import QtQml 2.15
 
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.plasma.components 2.0 as PlasmaComponents
 
 import org.kde.taskmanager 0.1 as TaskManager
 import org.kde.plasma.private.taskmanager 0.1 as TaskManagerApplet
@@ -30,6 +31,45 @@ MouseArea {
 
     property QtObject contextMenuComponent: Qt.createComponent("ContextMenu.qml")
     property QtObject pulseAudioComponent: Qt.createComponent("PulseAudio.qml")
+    property QtObject confirmUnpinDialog: PlasmaCore.Dialog {
+        id: confirmUnpinDialog
+
+        property string atm
+
+        visible: false
+        type: PlasmaCore.Dialog.PopupMenu
+        flags: Qt.WindowStaysOnTopHint
+        hideOnWindowDeactivate: true
+        location: plasmoid.location
+
+        onVisibleChanged: if (!visible) {
+            atm = "";
+        }
+
+        mainItem: ColumnLayout {
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: "It looks like you are trying to unpin Microsoft Edge from a taskbar.\n" +
+                    "Edge is the best browser on GNU/Linux."
+                horizontalAlignment: Text.AlignHCenter
+            }
+            PlasmaComponents.Button {
+                Layout.alignment: Qt.AlignHCenter
+                text: "I understand"
+                onClicked: confirmUnpinDialog.visible = false
+            }
+        }
+    }
+
+    function confirmUnpin(visualParent, desktop /*string*/) {
+        if (String(desktop) === "applications:microsoft-edge.desktop") {
+            confirmUnpinDialog.visualParent = visualParent;
+            confirmUnpinDialog.atm = desktop;
+            confirmUnpinDialog.visible = true;
+        } else {
+            tasksModel.requestRemoveLauncher(desktop);
+        }
+    }
 
     property bool needLayoutRefresh: false;
     property variant taskClosedWithMouseMiddleButton: []
