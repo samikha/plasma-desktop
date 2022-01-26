@@ -88,8 +88,8 @@ Loader {
 
         PlasmaComponents3.ScrollView {
             // 2 * PlasmaCore.Units.smallSpacing is for the margin of tooltipDialog
-            implicitWidth: leftPadding + rightPadding + Math.min(Screen.desktopAvailableWidth - 2 * PlasmaCore.Units.smallSpacing, contentItem.contentItem.childrenRect.width)
-            implicitHeight: bottomPadding + Math.min(Screen.desktopAvailableHeight - 2 * PlasmaCore.Units.smallSpacing, contentItem.contentItem.childrenRect.height)
+            contentWidth: Math.min(Screen.desktopAvailableWidth - 2 * PlasmaCore.Units.smallSpacing, contentItem.contentItem.childrenRect.width)
+            contentHeight: Math.min(Screen.desktopAvailableHeight - 2 * PlasmaCore.Units.smallSpacing, contentItem.contentItem.childrenRect.height)
 
             ListView {
                 id: groupToolTipListView
