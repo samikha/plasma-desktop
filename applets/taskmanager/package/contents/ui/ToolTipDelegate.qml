@@ -90,13 +90,19 @@ Loader {
 
         PlasmaComponents3.ScrollView {
             // 2 * PlasmaCore.Units.smallSpacing is for the margin of tooltipDialog
-            implicitWidth: leftPadding + rightPadding + Math.min(Screen.desktopAvailableWidth - 2 * PlasmaCore.Units.smallSpacing, contentItem.contentItem.childrenRect.width)
-            implicitHeight: bottomPadding + Math.min(Screen.desktopAvailableHeight - 2 * PlasmaCore.Units.smallSpacing, contentItem.contentItem.childrenRect.height)
+            implicitWidth: leftPadding + rightPadding + Math.min(Screen.desktopAvailableWidth - 2 * PlasmaCore.Units.smallSpacing, Math.max(delegateModel.estimatedWidth, contentItem.contentItem.childrenRect.width))
+            implicitHeight: bottomPadding + Math.min(Screen.desktopAvailableHeight - 2 * PlasmaCore.Units.smallSpacing, Math.max(delegateModel.estimatedHeight, contentItem.contentItem.childrenRect.height))
 
             ListView {
                 id: groupToolTipListView
 
                 model: DelegateModel {
+                    id: delegateModel
+
+                    // On Wayland, a tooltip has a significant resizing process, so estimate the size first.
+                    readonly property int estimatedWidth: (toolTipDelegate.isVerticalPanel ? 1 : count) * (toolTipDelegate.tooltipInstanceMaximumWidth + PlasmaCore.Units.smallSpacing * 2) - PlasmaCore.Units.smallSpacing * 2
+                    readonly property int estimatedHeight: (toolTipDelegate.isVerticalPanel ? count : 1) * (toolTipDelegate.tooltipInstanceMaximumWidth / 2 + PlasmaCore.Units.smallSpacing * 2) - PlasmaCore.Units.smallSpacing * 2
+
                     model: toolTipDelegate.hasRootIndex ? tasksModel : null
 
                     rootIndex: toolTipDelegate.rootIndex
