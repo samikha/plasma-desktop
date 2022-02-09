@@ -64,8 +64,6 @@ public:
 
     Q_INVOKABLE QRect globalRect(QQuickItem *item) const;
 
-    Q_INVOKABLE void ungrabMouse(QQuickItem *item) const;
-
     bool canPresentWindows() const;
 
     Q_INVOKABLE bool isApplication(const QUrl &url) const;
