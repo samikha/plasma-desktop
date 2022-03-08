@@ -151,30 +151,32 @@ LibinputTouchpad::LibinputTouchpad(Display *display, int deviceId)
 
     int nDevices = 0;
     XIDeviceInfo *deviceInfo = XIQueryDevice(m_display, m_deviceId, &nDevices);
-    m_name = deviceInfo->name;
+    if (deviceInfo) {
+        m_name = deviceInfo->name;
 
-    for (int i = 0; i < deviceInfo->num_classes; ++i) {
-        XIAnyClassInfo *classInfo = deviceInfo->classes[i];
+        for (int i = 0; i < deviceInfo->num_classes; ++i) {
+            XIAnyClassInfo *classInfo = deviceInfo->classes[i];
 
-        if (classInfo->type == XIButtonClass) {
-            XIButtonClassInfo *btnInfo = (XIButtonClassInfo *)classInfo;
-            m_supportedButtons.avail = true;
-            m_supportedButtons.set(maskBtns(m_display, btnInfo));
+            if (classInfo->type == XIButtonClass) {
+                XIButtonClassInfo *btnInfo = (XIButtonClassInfo *)classInfo;
+                m_supportedButtons.avail = true;
+                m_supportedButtons.set(maskBtns(m_display, btnInfo));
+            }
+            if (classInfo->type == XITouchClass) {
+                XITouchClassInfo *touchInfo = (XITouchClassInfo *)classInfo;
+                m_tapFingerCount.avail = true;
+                m_tapFingerCount.set(touchInfo->num_touches);
+            }
         }
-        if (classInfo->type == XITouchClass) {
-            XITouchClassInfo *touchInfo = (XITouchClassInfo *)classInfo;
+        XIFreeDeviceInfo(deviceInfo);
+
+        /* FingerCount cannot be zero */
+        if (!m_tapFingerCount.val) {
             m_tapFingerCount.avail = true;
-            m_tapFingerCount.set(touchInfo->num_touches);
+            m_tapFingerCount.set(1);
         }
+        m_config = KSharedConfig::openConfig(QStringLiteral("touchpadxlibinputrc"));
     }
-    XIFreeDeviceInfo(deviceInfo);
-
-    /* FingerCount cannot be zero */
-    if (!m_tapFingerCount.val) {
-        m_tapFingerCount.avail = true;
-        m_tapFingerCount.set(1);
-    }
-    m_config = KSharedConfig::openConfig(QStringLiteral("touchpadxlibinputrc"));
 }
 
 bool LibinputTouchpad::getConfig()
